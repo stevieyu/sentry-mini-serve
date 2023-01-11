@@ -1,0 +1,58 @@
+name: PHP Composer
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-dev
+      
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+          php-version: '8.2'
+          ini-values: phar.readonly=0
+          tools: composer
+          coverage: none
+          
+    - name: get box
+      run: curl -LkSs https://github.com/box-project/box/releases/latest/download/box.phar -o box.phar
+      
+    - name: build phar
+      run: php box.phar compile
+      
+#    - uses: softprops/action-gh-release@v1
+#      with:
+#        token: ${{ secrets.GH_TOKEN }}
+#        tag_name: test
+#        files: sentry-mini.phar
+      
+    - uses: actions/upload-artifact@v3
+      name: Upload the PHAR artifact
+      with:
+        name: phar
+        path: |
+            sentry-mini.phar
+            vendor
