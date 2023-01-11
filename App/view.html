@@ -1,141 +1,178 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>sentry mini</title>
-    <script defer src="https://cdn.bootcdn.net/ajax/libs/amis/2.6.0/sdk.min.js"></script>
-    <link href="https://cdn.bootcdn.net/ajax/libs/amis/2.6.0/antd.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcdn.net/ajax/libs/amis/2.6.0/iconfont.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>sentry mini</title>
+  <script defer src="https://cdn.bootcdn.net/ajax/libs/amis/2.6.0/sdk.min.js"></script>
+  <link href="https://cdn.bootcdn.net/ajax/libs/amis/2.6.0/antd.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcdn.net/ajax/libs/amis/2.6.0/iconfont.min.css" rel="stylesheet">
 
-<!--    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.2.1/css/all.min.css" rel="stylesheet">-->
+  <!--    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.2.1/css/all.min.css" rel="stylesheet">-->
 
-    <script defer src="https://cdn.jsdelivr.net/npm/ua-parser-js@1/dist/ua-parser.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/ua-parser-js@1/dist/ua-parser.min.js"></script>
 
-    <link href="https://cdn.bootcdn.net/ajax/libs/modern-normalize/1.1.0/modern-normalize.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcdn.net/ajax/libs/modern-normalize/1.1.0/modern-normalize.min.css" rel="stylesheet">
 </head>
 <body>
 <div id="app"></div>
 <script type="module">
-    const json = {
-
-            "name":"list",
-            "type": "service",
-            "api": "/api/55/store",
+  const json = {
+    "name": "list",
+    "type": "service",
+    "data": {
+      "appid": 55,
+      "showAppSwitch": location.search.includes('amisDebug')
+    },
+    "api": "/api/${appid}/store",
+    "body": [
+      {
+        "type": "button-group-select",
+        "name": "appid",
+        "source": "/api/keys",
+        "visibleOn": "${showAppSwitch}"
+      },
+      {
+        "type": "table",
+        "title": "",
+        "itemActions": [
+          {
+            "label": "删除",
+            "type": "button",
+            "actionType": "ajax",
+            "api": {
+              "method": "delete",
+              "url": "/api/55/store/${_id}"
+            },
+            "reload": "list"
+          }
+        ],
+        "columns": [
+          {
+            "label": "id",
+            "name": "_id",
+            "type": "tpl",
+          },
+          {
+            "label": "异常",
+            "type": "list",
+            "source": "${exception.values}",
+            "listItem": {
+              "title": "${type}",
+              "subTitle": "${value}"
+            },
+            // "name": "xxxxx",
+            // "searchable": true
+          },
+          {
+            "name": "timestamp",
+            "label": "时间",
+            "type": "date",
+            "fromNow": true,
+          },
+          {
+            "label": "请求",
+            "type": "container",
             "body": [
-                {
-                    "type": "table",
-                    "title": "",
-                    "itemActions": [
-                        {
-                            "label": "删除",
-                            "type": "button",
-                            "actionType": "ajax",
-                            "api": {
-                                "method": "delete",
-                                "url": "/api/55/store/${_id}"
-                            },
-                            "reload": "list"
-                        }
-                    ],
-                    "columns": [
-                        {
-                            "label": "id",
-                            "name":"_id",
-                            "type": "tpl",
-                        },
-                        {
-                            "label": "异常",
-                            "type": "list",
-                            "source": "${exception.values}",
-                            "listItem": {
-                                "title": "${type}",
-                                "subTitle": "${value}"
-                            }
-                        },
-                        {
-                            "name": "timestamp",
-                            "label": "时间",
-                            "type": "date",
-                            "fromNow": true,
-                        },
-                        {
-                            "label": "请求",
-                            "type": "container",
-                            "body": [
-                                {
-                                    "type": "tpl",
-                                    "tpl": "${request.url}",
-                                },
-                                {
+              {
+                "type": "tpl",
+                "tpl": "${request.url}",
+              },
+              {
+                "type": "service",
+                "data": {
+                  "ua": "${request.headers['User-Agent']|uaparse}"
+                },
+                "body": {
+                  "type": "tooltip-wrapper",
+                  "content": "${ua.ua}",
+                  "className": "inline-block",
+                  "placement": "left",
+                  "body": [
+                    {
+                      "type": "tag",
+                      "label": "${ua.browser.name}:${ua.browser.version}",
+                      "color": "inactive"
+                    },
+                    {
+                      "type": "tag",
+                      "label": "${ua.os.name}:${ua.os.version}",
+                      "color": "inactive"
+                    },
+                  ]
+                },
 
-                                    "type": "service",
-                                    "data":{
-                                        "ua": "${request.headers['User-Agent']|uaparse}"
-                                    },
-                                    "body":{
-                                        "type": "tooltip-wrapper",
-                                        "content": "$ua.ua",
-                                        "className": "inline-block",
-                                        "placement": "left",
-                                        "body": [
-                                            {
-                                                "type": "tag",
-                                                "label": "${ua.browser.name}:${ua.browser.version}",
-                                                "color": "inactive"
-                                            },
-                                            {
-                                                "type": "tag",
-                                                "label": "${ua.os.name}:${ua.os.version}",
-                                                "color": "inactive"
-                                            },
-                                        ]
-                                    },
-
-                                },
-                            ]
-                        },
-                        {
-                            "label": "面包屑",
-                            "type": "container",
-                            "style": {
-                                "display": "inline-block"
-                            },
-                            "body": {
-                                "type": "tpl",
-                                "tpl": "${breadcrumbs.length}"
-                            },
-                            "popOver": {
-                                "position":"right-top",
-                                "body": {
-                                    "source": "${breadcrumbs|reverse}",
-                                    "type": "list",
-                                    "listItem": {
-                                        "title": "${category}",
-                                        "subTitle": "${data|json}"
-                                    }
-                                }
-                            }
-                        },
-                    ]
-                }
+              },
             ]
-    }
-    // window.enableAMISDebug = true
-
-    let amisLib = amisRequire('amis');
-    amisLib.registerFilter('reverse', (input) => input.reverse());
-    amisLib.registerFilter('uaparse', (input) => (new UAParser(input)).getResult());
-
-    let amis = amisRequire('amis/embed');
-
-    let amisInstance = amis.embed(
-        '#app',
-        json,
-        {},
-        {
-            theme: 'antd'
+          },
+          {
+            "label": "面包屑",
+            "type": "container",
+            "style": {
+              "display": "inline-block"
+            },
+            "body": {
+              "type": "tpl",
+              "tpl": "${breadcrumbs.length}"
+            },
+            "popOver": {
+              "position": "right-top",
+              "body": {
+                "source": "${breadcrumbs|reverse}",
+                "type": "list",
+                "listItem": {
+                  "title": "${category}",
+                  "subTitle": "${data|json}"
+                }
+              }
+            }
+          },
+        ],
+        "onEvent": {
+          "columnFilter": {
+            "actions": [
+              {
+                "actionType": "toast",
+                "args": {
+                  "msgType": "info",
+                  "msg": "filterName：${filterName},filterValue：${filterValue}"
+                }
+              }
+            ]
+          },
+          "columnSearch": {
+            "actions": [
+              {
+                "actionType": "toast",
+                "args": {
+                  "msgType": "info",
+                  "msg": "searchName：${searchName},searchValue：${searchValue|json}"
+                }
+              }
+            ]
+          },
         }
-    );
+      }
+    ],
+  }
+  // window.enableAMISDebug = true
+
+  let amisLib = amisRequire('amis');
+  amisLib.registerFilter('reverse', (input) => input.reverse());
+  amisLib.registerFilter('uaparse', (input) => {
+    // console.log(input);
+    return (new UAParser(input)).getResult();
+  });
+
+  let amis = amisRequire('amis/embed');
+
+  let amisInstance = amis.embed(
+      '#app',
+      json,
+      {},
+      {
+        theme: 'antd'
+      }
+  );
 </script>
 </body>
 </html>
