@@ -50,12 +50,13 @@ jobs:
 #        files: sentry-mini.phar
       
     - uses: actions/upload-artifact@v3
-    - name: Upload the serve PHAR artifact
+      name: Upload the serve artifact
       with:
         name: serve
         path: sentry-mini.phar
 
-    - name: Upload the vendor artifact
+    - uses: actions/upload-artifact@v3
+      name: Upload the vendor artifact
       with:
         name: vendor
         path: vendor
