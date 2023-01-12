@@ -16,12 +16,13 @@
 <body>
 <div id="app"></div>
 <script type="module">
+  const app = (await (await fetch('/api/keys')).json())[0]
   const json = {
     "name": "list",
     "type": "service",
     "data": {
-      "appid": 55,
-      "showAppSwitch": location.search.includes('amisDebug')
+      "appid": (new URLSearchParams(location.search)).get('app') || localStorage.getItem('app') || app[0],
+      "showAppSwitch": location.search.includes('app')
     },
     "api": "/api/${appid}/store",
     "body": [
@@ -29,6 +30,16 @@
         "type": "button-group-select",
         "name": "appid",
         "source": "/api/keys",
+        "onEvent": {
+          "change": {
+            "actions": [
+              {
+                "actionType": "custom",
+                "script": "localStorage.setItem('app', event.data.value)"
+              }
+            ]
+          }
+        },
         "visibleOn": "${showAppSwitch}"
       },
       {
@@ -84,7 +95,7 @@
                 },
                 "body": {
                   "type": "tooltip-wrapper",
-                  "content": "${ua.ua}",
+                  "content": "${request.headers['User-Agent']}",
                   "className": "inline-block",
                   "placement": "left",
                   "body": [
@@ -126,6 +137,10 @@
               }
             }
           },
+          {
+            "label": "",
+            "type": "tpl"
+          }
         ],
         "onEvent": {
           "columnFilter": {
@@ -158,10 +173,7 @@
 
   let amisLib = amisRequire('amis');
   amisLib.registerFilter('reverse', (input) => input.reverse());
-  amisLib.registerFilter('uaparse', (input) => {
-    // console.log(input);
-    return (new UAParser(input)).getResult();
-  });
+  amisLib.registerFilter('uaparse', (input) => (new UAParser(input)).getResult());
 
   let amis = amisRequire('amis/embed');
 
