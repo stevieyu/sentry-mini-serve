@@ -28,9 +28,9 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-dev
-      
+
+    - uses: shivammathur/setup-php@v2
     - name: Setup PHP
-      uses: shivammathur/setup-php@v2
       with:
           php-version: '8.2'
           ini-values: phar.readonly=0
@@ -50,13 +50,12 @@ jobs:
 #        files: sentry-mini.phar
       
     - uses: actions/upload-artifact@v3
-      name: Upload the PHAR artifact
+    - name: Upload the serve PHAR artifact
       with:
         name: serve
         path: sentry-mini.phar
 
-    - uses: actions/upload-artifact@v3
-      name: Upload the PHAR artifact
+    - name: Upload the vendor artifact
       with:
         name: vendor
         path: vendor
