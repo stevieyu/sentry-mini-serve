@@ -44,12 +44,12 @@ $r->delete('/api/{appid}/store/{id}', function ($args) {
 
 $r->get('/api/keys', function ($args) {
     $path = \App\Store::getDatabasePath();
-    $res = array_filter(scandir($path), function ($v){
+    $res = array_filter(scandir($path), function ($v) {
         return !in_array($v, ['.', '..']);
     });
     return array_values($res);
 });
 
 $r->get('/[{any:.+}]', function () {
-    echo file_get_contents(__DIR__.'/view.html');
+    echo file_get_contents(__DIR__ . '/view.html');
 });

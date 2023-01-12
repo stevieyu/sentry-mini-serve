@@ -13,8 +13,9 @@ class Route
         $this->dispatch($dispatcher);
     }
 
-    public function routers(\FastRoute\RouteCollector $r){
-        include __DIR__.'/routers.php';
+    public function routers(\FastRoute\RouteCollector $r)
+    {
+        include __DIR__ . '/routers.php';
     }
 
     protected function dispatch(\FastRoute\Dispatcher $dispatcher)
@@ -40,7 +41,7 @@ class Route
             case \FastRoute\Dispatcher::FOUND:
                 if ($routeInfo[1] instanceof \Closure) {
                     $args = $routeInfo[2] ?? [];
-                    $post = array_merge($_POST, json_decode(file_get_contents('php://input'), true));
+                    $post = array_merge($_POST, json_decode(file_get_contents('php://input'), true) ?: []);
                     $res = $routeInfo[1]($args, $post);
                     if (is_array($res)) $res = json_encode($res, JSON_UNESCAPED_UNICODE);
                     echo $res;

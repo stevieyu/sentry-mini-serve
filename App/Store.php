@@ -12,6 +12,7 @@ class Store
      * @var null|\SleekDB\Store
      */
     private static $instance = null;
+
     public static function __callStatic($name, $arguments)
     {
         if (empty(self::$instance)) {
