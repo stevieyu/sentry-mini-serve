@@ -52,7 +52,11 @@ jobs:
     - uses: actions/upload-artifact@v3
       name: Upload the PHAR artifact
       with:
-        name: phar
-        path: |
-            sentry-mini.phar
-            vendor
+        path: sentry-mini.phar
+
+#    - uses: actions/upload-artifact@v3
+#      name: Upload the PHAR artifact
+#      with:
+#        name: vendor
+#        path: vendor
+
