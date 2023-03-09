@@ -42,12 +42,21 @@ jobs:
       
     - name: build phar
       run: php box.phar compile
-      
-    - uses: softprops/action-gh-release@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: 1
-        files: sentry-mini.phar
+
+    - uses: release-drafter/release-drafter@v5
+      # (Optional) specify config name to use, relative to .github/. Default: release-drafter.yml
+      # with:
+      #   config-name: my-config.yml
+      #   disable-autolabeler: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+      #    - uses: softprops/action-gh-release@v1
+#      with:
+#        token: ${{ secrets.GITHUB_TOKEN }}
+#        tag_name: 1
+#        files: sentry-mini.phar
       
     - uses: actions/upload-artifact@v3
       name: Upload the serve artifact
