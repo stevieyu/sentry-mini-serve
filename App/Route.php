@@ -41,7 +41,9 @@ class Route
             case \FastRoute\Dispatcher::FOUND:
                 if ($routeInfo[1] instanceof \Closure) {
                     $args = $routeInfo[2] ?? [];
-                    $post = array_merge($_POST, json_decode(file_get_contents('php://input'), true) ?: []);
+                    $input = file_get_contents('php://input');
+                    $input = zlib_decode($input) ?: $input;
+                    $post = array_merge($_POST, json_decode($input, true) ?: []);
                     $res = $routeInfo[1]($args, $post);
                     if (is_array($res)) $res = json_encode($res, JSON_UNESCAPED_UNICODE);
                     echo $res;

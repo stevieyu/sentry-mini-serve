@@ -16,20 +16,21 @@
 <body>
 <div id="app"></div>
 <script type="module">
-  const app = (await (await fetch('/api/keys')).json())[0]
+  const apps = (await (await fetch('/api/keys')).json())
   const json = {
     "name": "list",
     "type": "service",
     "data": {
-      "appid": (new URLSearchParams(location.search)).get('app') || localStorage.getItem('app') || app[0],
-      "showAppSwitch": location.search.includes('app')
+      "appid": (new URLSearchParams(location.search)).get('app') || localStorage.getItem('app') || apps[0],
+      "showAppSwitch": location.search.includes('app'),
+      apps
     },
     "api": "/api/${appid}/store",
     "body": [
       {
         "type": "button-group-select",
         "name": "appid",
-        "source": "/api/keys",
+        "source": "${apps}",
         "onEvent": {
           "change": {
             "actions": [
@@ -77,7 +78,7 @@
           {
             "name": "timestamp",
             "label": "时间",
-            "type": "date",
+            "type": "datetime",
             "fromNow": true,
           },
           {

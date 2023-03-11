@@ -42,7 +42,7 @@ $r->delete('/api/{appid}/store/{id}', function ($args) {
     return \App\Store::deleteById($args['id']);
 });
 
-$r->get('/api/keys', function ($args) {
+$r->get('/api/keys', function () {
     $path = \App\Store::getDatabasePath();
     $res = array_filter(scandir($path), function ($v) {
         return !in_array($v, ['.', '..']);
